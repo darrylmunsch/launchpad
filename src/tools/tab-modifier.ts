@@ -5,6 +5,7 @@ import { registerTool } from '../components/tools-panel';
 import {
   ICON_COLORS, ICON_SHAPES,
   generateIconSvg, generateId, loadRules, saveRules,
+  matchesRule, applyTitleTemplate,
 } from './tab-modifier-types';
 import type { TabRule, TabRuleIcon, MatchType, IconShape } from './tab-modifier-types';
 
@@ -160,6 +161,17 @@ function renderForm(rule: TabRule): void {
         <span class="tm-field-hint">Variables: <code>{title}</code> <code>{domain}</code> <code>{url}</code></span>
       </label>
 
+      <div class="tm-url-tester">
+        <label class="form-field">
+          <span class="form-label">Test URL</span>
+          <div class="tm-url-tester-input-row">
+            <input type="text" class="form-input" name="testUrl" placeholder="https://localhost:3000/dashboard" autocomplete="off">
+            <span class="tm-url-tester-indicator"></span>
+          </div>
+        </label>
+        <div class="tm-url-tester-result hidden"></div>
+      </div>
+
       <fieldset class="tm-icon-fieldset">
         <legend class="form-label">Tab Icon</legend>
         <label class="tm-radio-label">
@@ -251,6 +263,49 @@ function renderForm(rule: TabRule): void {
     }
     preview.innerHTML = generateIconSvg({ shape: selectedShape, color: selectedColor });
   }
+
+  // URL tester — live match feedback
+  const testUrlInput = form.querySelector<HTMLInputElement>('[name="testUrl"]')!;
+  const testerIndicator = form.querySelector<HTMLElement>('.tm-url-tester-indicator')!;
+  const testerResult = form.querySelector<HTMLElement>('.tm-url-tester-result')!;
+
+  function updateTestResult(): void {
+    const testUrl = testUrlInput.value.trim();
+    if (!testUrl) {
+      testerIndicator.className = 'tm-url-tester-indicator';
+      testerIndicator.textContent = '';
+      testerResult.classList.add('hidden');
+      return;
+    }
+
+    const tempRule: TabRule = {
+      id: '', enabled: true,
+      name: '',
+      matchType: matchTypeSelect.value as MatchType,
+      matchPattern: patternInput.value.trim(),
+      titleTemplate: '',
+      icon: null,
+    };
+
+    const isMatch = matchesRule(testUrl, tempRule);
+    testerIndicator.className = 'tm-url-tester-indicator ' + (isMatch ? 'match' : 'no-match');
+    testerIndicator.textContent = isMatch ? '✓ Match' : '✗ No match';
+
+    if (isMatch) {
+      const titleInput = form.querySelector<HTMLInputElement>('[name="titleTemplate"]')!;
+      const template = titleInput.value.trim() || '{title}';
+      const preview = applyTitleTemplate(template, 'Page Title', testUrl);
+      testerResult.textContent = `Title → ${preview}`;
+      testerResult.classList.remove('hidden');
+    } else {
+      testerResult.classList.add('hidden');
+    }
+  }
+
+  testUrlInput.addEventListener('input', updateTestResult);
+  patternInput.addEventListener('input', updateTestResult);
+  matchTypeSelect.addEventListener('change', updateTestResult);
+  form.querySelector<HTMLInputElement>('[name="titleTemplate"]')!.addEventListener('input', updateTestResult);
 
   // Submit
   form.addEventListener('submit', async (e) => {

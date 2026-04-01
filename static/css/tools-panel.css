@@ -524,6 +524,59 @@
   border-radius: 3px;
 }
 
+/* ─── URL Tester ─── */
+.tm-url-tester {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.tm-url-tester .form-field {
+  margin: 0;
+}
+
+.tm-url-tester-input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.tm-url-tester-input-row .form-input {
+  flex: 1;
+}
+
+.tm-url-tester-indicator {
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 80px;
+  text-align: center;
+}
+
+.tm-url-tester-indicator.match {
+  color: var(--color-success, #22c55e);
+}
+
+.tm-url-tester-indicator.no-match {
+  color: var(--color-danger, #ef4444);
+}
+
+.tm-url-tester-result {
+  font-size: 0.78rem;
+  font-family: monospace;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-hover);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tm-url-tester-result.hidden {
+  display: none;
+}
+
 /* ─── Icon Picker ─── */
 .tm-icon-fieldset {
   border: 1px solid var(--color-border);
