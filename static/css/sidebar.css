@@ -1,0 +1,176 @@
+/* ─── Sidebar Header ─── */
+.sidebar-header {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-sidebar-border);
+  /* Match the content-header height so dividers align */
+  display: flex;
+  align-items: center;
+  height: var(--header-height);
+  box-sizing: border-box;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar-logo svg {
+  flex-shrink: 0;
+  color: var(--color-accent);
+}
+
+/* ─── Navigation Tree ─── */
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-sm) 0;
+}
+
+.folder-tree {
+  padding: 0;
+}
+
+.folder-item {
+  position: relative;
+}
+
+.folder-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 6px var(--space-md);
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  cursor: pointer;
+  border: none;
+  background: none;
+  text-align: left;
+}
+
+.folder-label:hover {
+  background: var(--color-sidebar-hover);
+  color: var(--color-text-primary);
+}
+
+.folder-label.active {
+  background: var(--color-sidebar-active-bg);
+  color: var(--color-sidebar-active-text);
+  font-weight: 500;
+}
+
+.folder-icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.folder-label.active .folder-icon {
+  opacity: 1;
+}
+
+.folder-arrow {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-fast);
+  opacity: 0.5;
+  margin-left: auto;
+}
+
+.folder-arrow.expanded {
+  transform: rotate(90deg);
+}
+
+.folder-children {
+  padding-left: var(--space-md);
+  overflow: hidden;
+}
+
+.folder-children.collapsed {
+  display: none;
+}
+
+/* ─── Folder Drag Reorder ─── */
+.folder-item.dragging {
+  opacity: 0.4;
+}
+
+.folder-item.dragging * {
+  pointer-events: none;
+}
+
+.folder-item.drag-above > .folder-label {
+  box-shadow: 0 -2px 0 0 var(--color-accent);
+}
+
+.folder-item.drag-below > .folder-label {
+  box-shadow: 0 2px 0 0 var(--color-accent);
+}
+
+/* ─── Sidebar Footer ─── */
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border-top: 1px solid var(--color-sidebar-border);
+}
+
+.sidebar-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.sidebar-btn:hover {
+  background: var(--color-sidebar-hover);
+  color: var(--color-text-primary);
+}
+
+/* Collapsed state adjustments */
+.sidebar.collapsed .sidebar-footer {
+  flex-direction: column;
+  padding: var(--space-sm) var(--space-xs);
+}
+
+.sidebar.collapsed #settings-btn,
+.sidebar.collapsed #tools-btn {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-header {
+  padding: var(--space-md) var(--space-sm);
+  display: flex;
+  justify-content: center;
+}
+
+.sidebar.collapsed .folder-label {
+  justify-content: center;
+  padding: 6px var(--space-sm);
+}

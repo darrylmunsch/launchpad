@@ -1,0 +1,57 @@
+/* ─── App Shell ─── */
+body {
+  display: flex;
+  height: 100vh;
+}
+
+/* ─── Sidebar ─── */
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-sidebar-bg);
+  border-right: 1px solid var(--color-sidebar-border);
+  transition: width var(--transition-base), min-width var(--transition-base);
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 56px;
+  min-width: 56px;
+}
+
+/* Collapsed: hide text spans and arrows, but keep icons visible */
+.sidebar.collapsed .sidebar-header .sidebar-logo > span,
+.sidebar.collapsed .sidebar-nav .folder-label > span:not(.folder-icon),
+.sidebar.collapsed .sidebar-nav .folder-arrow {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+/* ─── Main Content ─── */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.content-header {
+  flex-shrink: 0;
+  padding: var(--space-sm) var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-surface);
+  height: var(--header-height);
+  box-sizing: border-box;
+}
+
+.bookmark-grid {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-lg);
+}

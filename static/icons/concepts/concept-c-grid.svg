@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Concept C: Dashboard grid with launch accent — conveys "launchpad = grid of actions" -->
+  <defs>
+    <linearGradient id="bg-c" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background -->
+  <rect width="128" height="128" rx="28" fill="url(#bg-c)"/>
+  <!-- 2x2 grid of rounded squares — the "pad" -->
+  <rect x="24" y="24" width="34" height="34" rx="8" fill="white" opacity="0.95"/>
+  <rect x="70" y="24" width="34" height="34" rx="8" fill="white" opacity="0.7"/>
+  <rect x="24" y="70" width="34" height="34" rx="8" fill="white" opacity="0.7"/>
+  <!-- Bottom-right: launch arrow instead of plain square -->
+  <rect x="70" y="70" width="34" height="34" rx="8" fill="#fbbf24"/>
+  <path d="M80 94 L87 80 L94 94" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="87" y1="80" x2="87" y2="72" stroke="white" stroke-width="3" stroke-linecap="round"/>
+</svg>

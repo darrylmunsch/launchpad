@@ -1,0 +1,338 @@
+/* ─── Grid Layouts ─── */
+
+/* Row layout: CSS Grid fills rows left-to-right */
+.bookmark-grid[data-layout="row"] .bookmark-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-sm);
+}
+
+/* Column layout: CSS columns fill top-to-bottom */
+.bookmark-grid[data-layout="column"] .bookmark-list {
+  column-count: 4;
+  column-gap: var(--space-sm);
+}
+
+@media (max-width: 1400px) {
+  .bookmark-grid[data-layout="column"] .bookmark-list {
+    column-count: 3;
+  }
+}
+
+@media (max-width: 1000px) {
+  .bookmark-grid[data-layout="column"] .bookmark-list {
+    column-count: 2;
+  }
+}
+
+/* ─── Section Wrapper ─── */
+.bookmark-section {
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.bookmark-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* ─── Section Header ─── */
+.bookmark-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+}
+
+.bookmark-section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.bookmark-section-count {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-hover);
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--radius-full, 9999px);
+  line-height: 1.4;
+}
+
+/* ─── Hidden Bookmark Indicator ─── */
+.bookmark-item.bookmark-hidden {
+  opacity: 0.45;
+}
+
+.bookmark-item.bookmark-hidden .bookmark-title {
+  text-decoration: line-through;
+  text-decoration-color: var(--color-text-tertiary);
+}
+
+/* ─── Bookmark Item (Card View) ─── */
+.bookmark-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  text-decoration: none;
+  color: var(--color-text-primary);
+  break-inside: avoid;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 40px;
+}
+
+.bookmark-item:hover {
+  background: var(--color-bg-hover);
+}
+
+.bookmark-item:active {
+  background: var(--color-bg-active);
+}
+
+/* ─── Card View ─── */
+.bookmark-grid[data-view="card"] .bookmark-item {
+  padding: var(--space-md);
+  gap: var(--space-md);
+}
+
+.bookmark-grid[data-view="card"] .bookmark-favicon {
+  width: 32px;
+  height: 32px;
+}
+
+.bookmark-grid[data-view="card"] .bookmark-title {
+  font-size: 0.95rem;
+}
+
+/* ─── Compact View ─── */
+.bookmark-grid[data-view="compact"] .bookmark-item {
+  padding: 4px var(--space-sm);
+  gap: var(--space-sm);
+}
+
+.bookmark-grid[data-view="compact"] .bookmark-favicon {
+  width: 16px;
+  height: 16px;
+}
+
+.bookmark-grid[data-view="compact"] .bookmark-title {
+  font-size: 0.85rem;
+}
+
+/* ─── Favicon ─── */
+.bookmark-favicon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.bookmark-favicon-fallback {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: var(--color-favicon-fallback-bg);
+  color: var(--color-favicon-fallback-text);
+  font-weight: 600;
+  font-size: 0.7em;
+  text-transform: uppercase;
+}
+
+/* ─── Title ─── */
+.bookmark-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* ─── Empty State ─── */
+.bookmark-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl) var(--space-md);
+  color: var(--color-text-tertiary);
+  text-align: center;
+  gap: var(--space-sm);
+}
+
+.bookmark-empty svg {
+  opacity: 0.4;
+  margin-bottom: var(--space-sm);
+}
+
+.bookmark-empty-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.bookmark-empty-subtitle {
+  font-size: 0.9rem;
+}
+
+/* ─── Subfolder List ─── */
+.subfolder-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.subfolder-list:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+/* ─── Drag States ─── */
+.bookmark-item.dragging {
+  opacity: 0.4;
+}
+
+.bookmark-item.drag-over {
+  box-shadow: 0 2px 0 0 var(--color-accent) inset;
+}
+
+.folder-label.drag-over {
+  background: var(--color-accent-subtle) !important;
+  color: var(--color-accent) !important;
+}
+
+/* ─── Keyboard Focus ─── */
+.bookmark-item:focus-visible,
+.bookmark-subfolder:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+/* ─── Subfolder in Grid ─── */
+.bookmark-subfolder {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  color: var(--color-text-secondary);
+  break-inside: avoid;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 40px;
+}
+
+.bookmark-subfolder:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.bookmark-subfolder-icon {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.bookmark-subfolder-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.bookmark-subfolder-count {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-hover);
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-full, 9999px);
+  line-height: 1.4;
+  margin-left: auto;
+}
+
+/* ─── Selection State ─── */
+.bookmark-item.selected {
+  background: var(--color-accent-subtle);
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+
+.bookmark-item.selected:hover {
+  background: var(--color-accent-subtle);
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+
+/* ─── Selection Bar ─── */
+.selection-bar {
+  position: fixed;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 30px var(--color-shadow-lg);
+  z-index: 100;
+  white-space: nowrap;
+}
+
+.selection-bar[hidden] {
+  display: none;
+}
+
+.selection-count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.selection-actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.selection-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 6px var(--space-sm);
+  font-size: 0.8rem;
+}
+
+.selection-close-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-tertiary);
+  transition: background var(--transition-fast), color var(--transition-fast);
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.selection-close-btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}

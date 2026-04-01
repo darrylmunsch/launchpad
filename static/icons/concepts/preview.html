@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Launchpad Icon Concepts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #0f0f14;
+    color: #e0e0e0;
+    padding: 40px;
+  }
+  h1 { font-size: 24px; margin-bottom: 8px; color: #fff; }
+  .subtitle { color: #888; margin-bottom: 40px; font-size: 14px; }
+  .concepts { display: flex; flex-wrap: wrap; gap: 32px; }
+  .concept {
+    background: #1a1a24;
+    border: 1px solid #2a2a3a;
+    border-radius: 16px;
+    padding: 24px;
+    width: 200px;
+    text-align: center;
+  }
+  .concept h2 { font-size: 14px; margin-bottom: 4px; color: #fff; }
+  .concept p { font-size: 12px; color: #888; margin-bottom: 16px; min-height: 32px; }
+  .sizes { display: flex; align-items: end; justify-content: center; gap: 16px; margin-top: 12px; }
+  .size-label { font-size: 10px; color: #666; text-align: center; }
+  .sizes img { display: block; margin: 0 auto 4px; }
+  .current {
+    border-color: #f59e0b;
+  }
+  .current h2::after {
+    content: ' (current)';
+    color: #f59e0b;
+    font-weight: normal;
+  }
+  .tab-preview {
+    margin-top: 40px;
+    background: #1a1a24;
+    border: 1px solid #2a2a3a;
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .tab-preview h2 { font-size: 16px; margin-bottom: 16px; color: #fff; }
+  .tab-row { display: flex; gap: 2px; margin-bottom: 12px; }
+  .fake-tab {
+    display: flex; align-items: center; gap: 6px;
+    background: #2a2a3a; padding: 6px 12px; border-radius: 8px 8px 0 0;
+    font-size: 12px; color: #ccc;
+  }
+  .fake-tab img { width: 16px; height: 16px; }
+  .fake-tab.active { background: #3a3a4a; }
+</style>
+</head>
+<body>
+
+<h1>Launchpad Icon Concepts</h1>
+<p class="subtitle">Compare designs at 128px, 48px, and 16px (actual tab favicon size)</p>
+
+<div class="concepts">
+  <div class="concept current">
+    <h2>Current</h2>
+    <p>Bookmark ribbon</p>
+    <img src="../icon-128.png" width="128" height="128" style="border-radius:14px">
+    <div class="sizes">
+      <div><img src="../icon-48.png" width="48" height="48"><span class="size-label">48px</span></div>
+      <div><img src="../icon-16.png" width="16" height="16"><span class="size-label">16px</span></div>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h2>A: Rocket</h2>
+    <p>Direct "launch" metaphor</p>
+    <img src="concept-a-rocket.svg" width="128" height="128">
+    <div class="sizes">
+      <div><img src="concept-a-rocket.svg" width="48" height="48"><span class="size-label">48px</span></div>
+      <div><img src="concept-a-rocket.svg" width="16" height="16"><span class="size-label">16px</span></div>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h2>B: Arrow</h2>
+    <p>Abstract velocity / upward</p>
+    <img src="concept-b-arrow.svg" width="128" height="128">
+    <div class="sizes">
+      <div><img src="concept-b-arrow.svg" width="48" height="48"><span class="size-label">48px</span></div>
+      <div><img src="concept-b-arrow.svg" width="16" height="16"><span class="size-label">16px</span></div>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h2>C: Grid</h2>
+    <p>Dashboard "pad" + launch</p>
+    <img src="concept-c-grid.svg" width="128" height="128">
+    <div class="sizes">
+      <div><img src="concept-c-grid.svg" width="48" height="48"><span class="size-label">48px</span></div>
+      <div><img src="concept-c-grid.svg" width="16" height="16"><span class="size-label">16px</span></div>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h2>D: Terminal</h2>
+    <p>Dev-focused command center</p>
+    <img src="concept-d-terminal.svg" width="128" height="128">
+    <div class="sizes">
+      <div><img src="concept-d-terminal.svg" width="48" height="48"><span class="size-label">48px</span></div>
+      <div><img src="concept-d-terminal.svg" width="16" height="16"><span class="size-label">16px</span></div>
+    </div>
+  </div>
+
+  <div class="concept">
+    <h2>E: Bolt</h2>
+    <p>Speed / instant / power</p>
+    <img src="concept-e-bolt.svg" width="128" height="128">
+    <div class="sizes">
+      <div><img src="concept-e-bolt.svg" width="48" height="48"><span class="size-label">48px</span></div>
+      <div><img src="concept-e-bolt.svg" width="16" height="16"><span class="size-label">16px</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-preview">
+  <h2>Simulated browser tabs (16px)</h2>
+  <div class="tab-row">
+    <div class="fake-tab active"><img src="../icon-16.png"> Current</div>
+    <div class="fake-tab"><img src="concept-a-rocket.svg" width="16" height="16"> A: Rocket</div>
+    <div class="fake-tab"><img src="concept-b-arrow.svg" width="16" height="16"> B: Arrow</div>
+    <div class="fake-tab"><img src="concept-c-grid.svg" width="16" height="16"> C: Grid</div>
+    <div class="fake-tab"><img src="concept-d-terminal.svg" width="16" height="16"> D: Terminal</div>
+    <div class="fake-tab"><img src="concept-e-bolt.svg" width="16" height="16"> E: Bolt</div>
+  </div>
+</div>
+
+</body>
+</html>

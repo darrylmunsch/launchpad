@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Concept B: Bold upward chevron/arrow — abstract "launch" feel, very clean at small sizes -->
+  <defs>
+    <linearGradient id="bg-b" x1="0" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background -->
+  <rect width="128" height="128" rx="28" fill="url(#bg-b)"/>
+  <!-- Upward arrow / chevron stack — suggests velocity -->
+  <path d="M64 28 L92 60 L76 60 L76 100 L52 100 L52 60 L36 60 Z" fill="white" opacity="0.95"/>
+  <!-- Speed lines -->
+  <rect x="38" y="72" width="12" height="3" rx="1.5" fill="rgba(255,255,255,0.5)"/>
+  <rect x="34" y="82" width="16" height="3" rx="1.5" fill="rgba(255,255,255,0.4)"/>
+  <rect x="78" y="72" width="12" height="3" rx="1.5" fill="rgba(255,255,255,0.5)"/>
+  <rect x="78" y="82" width="16" height="3" rx="1.5" fill="rgba(255,255,255,0.4)"/>
+</svg>
