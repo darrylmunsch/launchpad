@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Launchpad Promo Tile — 440x280</title>
+<style>
+  /* Set DevTools responsive mode to 440×280, then capture screenshot */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100vw; height: 100vh; overflow: hidden; }
+
+  .tile {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #0f1117 0%, #181a20 40%, #1a2332 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Subtle grid pattern */
+  .tile::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  /* Glow behind icon */
+  .glow {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+  }
+
+  .content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .icon-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .icon {
+    width: 52px;
+    height: 52px;
+    background: #3b82f6;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 24px rgba(59, 130, 246, 0.3);
+  }
+
+  .icon svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #e5e7eb;
+    letter-spacing: -0.02em;
+  }
+
+  .tagline {
+    font-size: 14px;
+    color: #9ca3af;
+    letter-spacing: 0.01em;
+  }
+
+  /* Feature pills */
+  .pills {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .pill {
+    font-size: 11px;
+    font-weight: 500;
+    color: #60a5fa;
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    padding: 4px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+<div class="tile">
+  <div class="glow"></div>
+  <div class="content">
+    <div class="icon-row">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2C12 2 8.5 7 8.5 13a3.5 3.5 0 0 0 7 0C15.5 7 12 2 12 2z"/>
+          <circle cx="12" cy="12.5" r="1.5" fill="white" stroke="none"/>
+          <path d="M8.5 13L6 16.5" /><path d="M15.5 13L18 16.5"/>
+          <path d="M10 16.5L12 20L14 16.5"/>
+        </svg>
+      </div>
+      <span class="title">Launchpad</span>
+    </div>
+    <span class="tagline">A fast, developer-focused new tab dashboard</span>
+    <div class="pills">
+      <span class="pill">Bookmarks</span>
+      <span class="pill">Tab Modifier</span>
+      <span class="pill">Keyboard-First</span>
+      <span class="pill">Themeable</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
