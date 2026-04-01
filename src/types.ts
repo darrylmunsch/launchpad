@@ -45,6 +45,7 @@ export interface AppSettings {
   sidebarCollapsed: boolean;
   showHidden: boolean;
   toastsEnabled: boolean;
+  openInNewTab: boolean;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -58,6 +59,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   sidebarCollapsed: false,
   showHidden: false,
   toastsEnabled: true,
+  openInNewTab: false,
 };
 
 // ─── State Shape ───

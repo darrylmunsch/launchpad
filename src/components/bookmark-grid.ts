@@ -564,9 +564,16 @@ function handleGridClick(e: MouseEvent): void {
       return;
     }
 
-    // Normal click — clear selection if active, let link navigate
+    // Normal click — clear selection if active, then navigate
     if (store.get('selectedBookmarkIds').size > 0) {
       clearSelection();
+    }
+
+    // Open in new tab if the setting is enabled
+    if (store.get('settings').openInNewTab) {
+      e.preventDefault();
+      const url = (bookmarkEl as HTMLAnchorElement).href;
+      if (url) chrome.tabs.create({ url });
     }
     return;
   }

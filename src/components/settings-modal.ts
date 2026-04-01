@@ -67,6 +67,17 @@ function renderGeneralTab(): void {
       </div>
     </div>
     <div class="settings-section">
+      <h3 class="settings-section-title">Bookmarks</h3>
+      <div class="settings-row">
+        <span class="settings-row-label">Open bookmarks in new tab</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="settings-open-new-tab" ${settings.openInNewTab ? 'checked' : ''}>
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+    </div>
+    <div class="settings-section">
       <h3 class="settings-section-title">Notifications</h3>
       <div class="settings-row">
         <span class="settings-row-label">Toast notifications</span>
@@ -82,6 +93,11 @@ function renderGeneralTab(): void {
   const sortSelect = document.getElementById('settings-default-sort') as HTMLSelectElement;
   sortSelect?.addEventListener('change', () => {
     updateSetting('sortMode', sortSelect.value as import('../types').SortMode);
+  });
+
+  const openNewTabToggle = document.getElementById('settings-open-new-tab') as HTMLInputElement;
+  openNewTabToggle?.addEventListener('change', () => {
+    updateSetting('openInNewTab', openNewTabToggle.checked);
   });
 
   const toastsToggle = document.getElementById('settings-toasts') as HTMLInputElement;
