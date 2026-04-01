@@ -9,6 +9,14 @@ import {
 } from './tab-modifier-types';
 import type { TabRule, TabRuleIcon, MatchType, IconShape } from './tab-modifier-types';
 
+// ─── Host Permission ───
+// <all_urls> is an optional permission — request it when the user first needs it.
+// chrome.permissions.request() is a no-op if already granted (no dialog shown).
+
+async function ensureHostPermission(): Promise<boolean> {
+  return chrome.permissions.request({ origins: ['<all_urls>'] });
+}
+
 // ─── State ───
 
 let container: HTMLElement;
@@ -329,6 +337,9 @@ function renderForm(rule: TabRule): void {
       return;
     }
 
+    // Request host permission before saving (must precede any await to keep user gesture)
+    await ensureHostPermission();
+
     if (isEditing) {
       const idx = rules.findIndex(r => r.id === rule.id);
       if (idx !== -1) rules[idx] = updatedRule;
@@ -348,6 +359,7 @@ async function toggleRule(id: string): Promise<void> {
   const rule = rules.find(r => r.id === id);
   if (!rule) return;
   rule.enabled = !rule.enabled;
+  if (rule.enabled) await ensureHostPermission();
   await saveRules(rules);
   renderList();
 }
@@ -408,6 +420,7 @@ function handleImport(): void {
           : null,
       }));
 
+      await ensureHostPermission();
       rules = [...rules, ...newRules];
       await saveRules(rules);
       renderList();
