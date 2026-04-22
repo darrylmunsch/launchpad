@@ -169,8 +169,3 @@
   display: flex;
   justify-content: center;
 }
-
-.sidebar.collapsed .folder-label {
-  justify-content: center;
-  padding: 6px var(--space-sm);
-}

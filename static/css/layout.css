@@ -22,13 +22,21 @@ body {
   min-width: 56px;
 }
 
-/* Collapsed: hide text spans and arrows, but keep icons visible */
-.sidebar.collapsed .sidebar-header .sidebar-logo > span,
-.sidebar.collapsed .sidebar-nav .folder-label > span:not(.folder-icon),
-.sidebar.collapsed .sidebar-nav .folder-arrow {
+/* Collapsed: hide the logo text and the whole folder nav. Only the logo
+   icon at top and the expand button at bottom remain visible. */
+.sidebar.collapsed .sidebar-header .sidebar-logo > span {
   opacity: 0;
   width: 0;
   overflow: hidden;
+}
+
+.sidebar.collapsed .sidebar-nav {
+  display: none;
+}
+
+/* Push footer to the bottom now that .sidebar-nav no longer expands. */
+.sidebar.collapsed .sidebar-footer {
+  margin-top: auto;
 }
 
 /* ─── Main Content ─── */

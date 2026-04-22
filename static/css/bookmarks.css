@@ -188,19 +188,36 @@
 }
 
 /* ─── Subfolder List ─── */
-.subfolder-list {
+/* Mirror .bookmark-list sizing so folders line up with bookmark columns. */
+.bookmark-grid[data-layout="row"] .subfolder-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--space-xs);
-  margin-bottom: var(--space-md);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--color-border);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-sm);
+}
+
+.bookmark-grid[data-layout="column"] .subfolder-list {
+  column-count: 4;
+  column-gap: var(--space-sm);
+}
+
+@media (max-width: 1400px) {
+  .bookmark-grid[data-layout="column"] .subfolder-list {
+    column-count: 3;
+  }
+}
+
+@media (max-width: 1000px) {
+  .bookmark-grid[data-layout="column"] .subfolder-list {
+    column-count: 2;
+  }
+}
+
+.subfolder-list {
+  margin-bottom: var(--space-sm);
 }
 
 .subfolder-list:last-child {
   margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
 }
 
 /* ─── Drag States ─── */
@@ -247,11 +264,43 @@
 .bookmark-subfolder-icon {
   flex-shrink: 0;
   opacity: 0.6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .bookmark-subfolder-name {
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+/* Match .bookmark-item card/compact sizing */
+.bookmark-grid[data-view="card"] .bookmark-subfolder {
+  padding: var(--space-md);
+  gap: var(--space-md);
+}
+
+.bookmark-grid[data-view="card"] .bookmark-subfolder-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.bookmark-grid[data-view="card"] .bookmark-subfolder-name {
+  font-size: 0.95rem;
+}
+
+.bookmark-grid[data-view="compact"] .bookmark-subfolder {
+  padding: 4px var(--space-sm);
+  gap: var(--space-sm);
+}
+
+.bookmark-grid[data-view="compact"] .bookmark-subfolder-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.bookmark-grid[data-view="compact"] .bookmark-subfolder-name {
+  font-size: 0.85rem;
 }
 
 .bookmark-subfolder-count {

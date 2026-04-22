@@ -4,6 +4,7 @@
 import type { Theme, ViewMode, LayoutMode } from '../types';
 import { store } from '../state';
 import { updateSetting } from '../settings';
+import { hasUnseenChanges } from '../changelog';
 import { $ } from '../utils/dom';
 
 let dialogEl: HTMLDialogElement;
@@ -239,13 +240,20 @@ function renderAppearanceTab(): void {
 }
 
 function renderAboutTab(): void {
+  const version = chrome.runtime.getManifest().version;
+  const seen = store.get('settings').lastSeenWhatsNewVersion;
+  const unseenCls = hasUnseenChanges(seen) ? ' has-unseen-whats-new' : '';
   contentEl.innerHTML = `
     <div class="settings-section">
       <h3 class="settings-section-title">Launchpad</h3>
       <p style="color: var(--color-text-secondary); font-size: 0.9rem; line-height: 1.6;">
         A fast, developer-focused new tab dashboard.<br>
-        Version 1.0.0
+        Version ${version}
       </p>
+      <div class="settings-row">
+        <span class="settings-row-label">Release notes</span>
+        <button type="button" class="btn btn-secondary${unseenCls}" id="settings-whats-new">What's New</button>
+      </div>
     </div>
     <div class="settings-section">
       <h3 class="settings-section-title">Keyboard Shortcuts</h3>
@@ -259,4 +267,9 @@ function renderAboutTab(): void {
       </div>
     </div>
   `;
+
+  const whatsNewBtn = document.getElementById('settings-whats-new');
+  whatsNewBtn?.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('open-whats-new'));
+  });
 }

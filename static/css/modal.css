@@ -380,6 +380,180 @@
   transform: translateX(20px);
 }
 
+/* ─── What's New Modal ─── */
+.whats-new-modal {
+  width: 520px;
+  max-width: 90vw;
+  max-height: 80vh;
+}
+
+.whats-new-modal[open] {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.whats-new-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.whats-new-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-lg) var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.whats-new-header .modal-title {
+  margin: 0;
+}
+
+.whats-new-header .modal-close {
+  position: static;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.whats-new-body {
+  padding: var(--space-lg);
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.whats-new-version + .whats-new-version {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+.whats-new-version-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.whats-new-version-number {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+}
+
+.whats-new-version-date {
+  font-size: 0.8rem;
+  color: var(--color-text-tertiary);
+}
+
+.whats-new-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.whats-new-group:last-child {
+  margin-bottom: 0;
+}
+
+.whats-new-badge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-full, 9999px);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+}
+
+.whats-new-badge-new {
+  background: var(--color-accent-subtle);
+  color: var(--color-accent);
+}
+
+.whats-new-badge-improved {
+  background: rgba(99, 102, 241, 0.12);
+  color: #818cf8;
+}
+
+.whats-new-badge-fixed {
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+}
+
+.whats-new-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.whats-new-item {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  padding-left: var(--space-md);
+  position: relative;
+}
+
+.whats-new-item::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0.7em;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-text-tertiary);
+}
+
+.whats-new-empty {
+  font-size: 0.9rem;
+  color: var(--color-text-tertiary);
+  text-align: center;
+  padding: var(--space-lg);
+}
+
+.whats-new-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ─── Unseen What's New indicator ─── */
+/* Small red dot rendered at the top-right of the host element. The host
+   just needs to tolerate `position: relative` — works on the sidebar cog
+   button and on the About tab in settings. */
+.has-unseen-whats-new {
+  position: relative;
+}
+
+.has-unseen-whats-new::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  box-shadow: 0 0 0 2px var(--color-bg-elevated);
+  pointer-events: none;
+}
+
 /* ─── Theme/Layout Selector ─── */
 .option-cards {
   display: flex;

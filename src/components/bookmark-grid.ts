@@ -416,7 +416,11 @@ function createBookmarkElement(bookmark: BookmarkItem): HTMLElement {
   if (bmMeta?.pinned) item.classList.add('bookmark-pinned');
   if (bmMeta?.hidden) item.classList.add('bookmark-hidden');
 
-  makeDraggable(item);
+  // Don't enable reorder-drag while filtering — flattened search results
+  // span multiple parent folders, so drop indexes are ambiguous.
+  if (!store.get('searchQuery').trim()) {
+    makeDraggable(item);
+  }
 
   const faviconSize = store.get('settings').viewMode === 'card' ? 32 : 16;
   const favicon = createFaviconElement(bookmark.url, faviconSize);

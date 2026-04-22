@@ -7,6 +7,7 @@
 // the browser's default URL-drag from interfering.
 
 import { store } from '../state';
+import { showToast } from './toast';
 
 let draggedBookmarkId: string | null = null;
 let draggedElement: HTMLElement | null = null;
@@ -21,6 +22,14 @@ export function initDragDrop(): void {
   grid.addEventListener('dragstart', (e: DragEvent) => {
     const item = (e.target as HTMLElement).closest<HTMLElement>('.bookmark-item');
     if (!item || !e.dataTransfer) return;
+
+    // Disable reorganization while a search filter is active.
+    // Search results are flattened from many folders, so drop-target
+    // indexes don't translate cleanly into sibling reorders.
+    if (store.get('searchQuery').trim()) {
+      showToast({ message: 'Reordering is disabled while searching' });
+      return;
+    }
 
     draggedBookmarkId = item.getAttribute('data-bookmark-id');
     draggedElement = item;
@@ -98,10 +107,15 @@ export function initDragDrop(): void {
     const targetId = targetItem.getAttribute('data-bookmark-id');
     if (!targetId || targetId === bookmarkId) return;
 
-    // Get target's index
+    // Resolve target's parent + index from Chrome (not from currentFolderId —
+    // the grid renders subfolder sections, so target's parent may differ
+    // from the folder the user is viewing).
     const targetNodes = await chrome.bookmarks.get(targetId);
     if (targetNodes.length === 0) return;
-    const targetIndex = targetNodes[0].index ?? 0;
+    const targetNode = targetNodes[0];
+    const targetParentId = targetNode.parentId;
+    if (!targetParentId) return;
+    const targetIndex = targetNode.index ?? 0;
 
     // Switch to manual sort so the reorder is visible
     const settings = store.get('settings');
@@ -110,7 +124,7 @@ export function initDragDrop(): void {
     }
 
     await chrome.bookmarks.move(bookmarkId, {
-      parentId: store.get('currentFolderId'),
+      parentId: targetParentId,
       index: targetIndex,
     });
   });

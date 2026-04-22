@@ -46,6 +46,10 @@ export interface AppSettings {
   showHidden: boolean;
   toastsEnabled: boolean;
   openInNewTab: boolean;
+  // Version string of the changelog entry most recently acknowledged by
+  // the user. Empty on fresh install; seeded to the current manifest
+  // version at bootstrap so future auto-show logic can compare cleanly.
+  lastSeenWhatsNewVersion: string;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -60,6 +64,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   showHidden: false,
   toastsEnabled: true,
   openInNewTab: false,
+  lastSeenWhatsNewVersion: '',
 };
 
 // ─── State Shape ───

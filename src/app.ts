@@ -2,7 +2,7 @@
 // Orchestrates initialization in the correct order for instant load.
 
 import { store } from './state';
-import { loadSettings, applySettings, loadSessionState, loadBookmarkMeta, initAutoSave } from './settings';
+import { loadSettings, applySettings, loadSessionState, loadBookmarkMeta, initAutoSave, updateSetting } from './settings';
 import { loadBookmarkTree, registerBookmarkListeners } from './bookmarks';
 import { initSidebar } from './components/sidebar';
 import { initBookmarkGrid } from './components/bookmark-grid';
@@ -11,6 +11,8 @@ import { initEditModal } from './components/edit-modal';
 import { initSettingsModal } from './components/settings-modal';
 import { initDragDrop } from './components/drag-drop';
 import { initToolsPanel } from './components/tools-panel';
+import { initWhatsNewModal } from './components/whats-new-modal';
+import { latestChangelogVersion } from './changelog';
 import { registerShortcut, initKeyboardShortcuts } from './utils/keyboard';
 
 async function init(): Promise<void> {
@@ -18,6 +20,13 @@ async function init(): Promise<void> {
     // 1. Load persisted settings + bookmark metadata in parallel
     const [settings] = await Promise.all([loadSettings(), loadBookmarkMeta()]);
     applySettings(settings);
+
+    // Seed lastSeenWhatsNewVersion on fresh installs so future auto-show
+    // logic has a starting baseline. Never shows a popup here — we just
+    // record the current changelog top silently.
+    if (!settings.lastSeenWhatsNewVersion) {
+      void updateSetting('lastSeenWhatsNewVersion', latestChangelogVersion());
+    }
 
     // 2. Restore last session (folder, sidebar expansion)
     await loadSessionState();
@@ -33,6 +42,7 @@ async function init(): Promise<void> {
     initSettingsModal();
     initDragDrop();
     initToolsPanel();
+    initWhatsNewModal();
 
     // 5. Register keyboard shortcuts
     registerShortcut({

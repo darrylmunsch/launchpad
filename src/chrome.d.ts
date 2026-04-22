@@ -72,6 +72,11 @@ declare namespace chrome {
   namespace runtime {
     const id: string;
     function getURL(path: string): string;
+    function getManifest(): {
+      version: string;
+      name: string;
+      [key: string]: unknown;
+    };
   }
 
   namespace tabs {
