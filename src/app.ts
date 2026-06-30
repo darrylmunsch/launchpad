@@ -13,7 +13,7 @@ import { initDragDrop } from './components/drag-drop';
 import { initToolsPanel } from './components/tools-panel';
 import { initWhatsNewModal } from './components/whats-new-modal';
 import { latestChangelogVersion } from './changelog';
-import { registerShortcut, initKeyboardShortcuts } from './utils/keyboard';
+import { registerShortcut, initKeyboardShortcuts, refreshFocusSearchShortcut } from './utils/keyboard';
 
 async function init(): Promise<void> {
   try {
@@ -45,14 +45,25 @@ async function init(): Promise<void> {
     initWhatsNewModal();
 
     // 5. Register keyboard shortcuts
+    const focusSearch = (): void => {
+      const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
+      searchInput?.focus();
+      searchInput?.select();
+    };
+
+    // In-page Ctrl+F (only fires when the page has focus; the chrome.commands
+    // binding below covers the omnibox-focused case).
     registerShortcut({
       key: 'f',
       ctrl: true,
-      handler: () => {
-        const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
-        searchInput?.focus();
-        searchInput?.select();
-      },
+      handler: focusSearch,
+    });
+
+    // Service worker forwards the global `focus-search` command here.
+    chrome.runtime.onMessage.addListener((message) => {
+      if (typeof message === 'object' && message !== null && (message as { type?: string }).type === 'focus-search') {
+        focusSearch();
+      }
     });
     registerShortcut({
       key: 'n',
@@ -91,6 +102,14 @@ async function init(): Promise<void> {
       },
     });
     initKeyboardShortcuts();
+
+    // Hydrate the cached "focus-search" binding for UI display, and refresh
+    // when the tab regains visibility (user may have just edited it at
+    // chrome://extensions/shortcuts).
+    void refreshFocusSearchShortcut();
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') void refreshFocusSearchShortcut();
+    });
 
     // 6. Register live update listeners
     registerBookmarkListeners();

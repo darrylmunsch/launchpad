@@ -10,6 +10,7 @@ import { createFaviconElement } from '../favicon';
 import { $, clearChildren } from '../utils/dom';
 import { makeDraggable } from './drag-drop';
 import { showToast } from './toast';
+import { getFocusSearchShortcut, formatShortcut, onFocusSearchShortcutChange } from '../utils/keyboard';
 
 let gridEl: HTMLElement;
 let headerEl: HTMLElement;
@@ -67,10 +68,19 @@ export function initBookmarkGrid(): void {
   // Create selection bar
   createSelectionBar();
 
+  // Re-render the header when the user's global focus-search binding changes
+  // (set via chrome://extensions/shortcuts).
+  onFocusSearchShortcutChange(() => updateHeader());
+
   // Initial render
   applyViewSettings();
   render();
   updateHeader();
+}
+
+function searchShortcutLabel(): string {
+  const custom = getFocusSearchShortcut();
+  return custom ? formatShortcut(custom) : 'Ctrl + F';
 }
 
 function applyViewSettings(): void {
@@ -122,7 +132,7 @@ async function updateHeader(): Promise<void> {
           </svg>
         </span>
         <input type="text" class="search-input" id="search-input" placeholder="Search..." aria-label="Search bookmarks" value="${escapeHtml(store.get('searchQuery'))}">
-        <span class="search-shortcut">Ctrl+F</span>
+        <span class="search-shortcut">${escapeHtml(searchShortcutLabel())}</span>
       </div>
       <div class="sort-container">
         <label class="sort-label" for="sort-select">Sort:</label>

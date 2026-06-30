@@ -77,6 +77,28 @@ declare namespace chrome {
       name: string;
       [key: string]: unknown;
     };
+    function sendMessage(message: unknown): Promise<unknown>;
+    const onMessage: {
+      addListener(
+        callback: (
+          message: unknown,
+          sender: { id?: string; tab?: tabs.Tab },
+          sendResponse: (response?: unknown) => void
+        ) => boolean | void
+      ): void;
+    };
+  }
+
+  namespace commands {
+    interface Command {
+      name?: string;
+      description?: string;
+      shortcut?: string;
+    }
+    function getAll(): Promise<Command[]>;
+    const onCommand: {
+      addListener(callback: (command: string) => void): void;
+    };
   }
 
   namespace tabs {

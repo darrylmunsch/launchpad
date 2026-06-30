@@ -17,6 +17,16 @@ export interface ChangelogVersion {
 
 export const CHANGELOG: ChangelogVersion[] = [
   {
+    version: '1.2.0',
+    date: '2026-05-18',
+    entries: [
+      { type: 'new', text: 'Global search shortcut — bind a key at chrome://extensions/shortcuts to focus the search bar from anywhere, even when the address bar has focus' },
+      { type: 'improved', text: 'Search input hint and the About panel now display your custom search shortcut binding' },
+      { type: 'improved', text: 'About panel lists more shortcuts: New bookmark (Ctrl + N) and Select all (Ctrl + A)' },
+      { type: 'fixed', text: 'Escape now reliably closes the Settings modal and other dialogs' },
+    ],
+  },
+  {
     version: '1.1.0',
     date: '2026-04-22',
     entries: [

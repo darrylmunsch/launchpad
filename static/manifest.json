@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Launchpad",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A fast, developer-focused new tab dashboard with bookmark management, tab customization, and more.",
   "permissions": ["bookmarks", "favicon", "storage", "tabs", "scripting"],
   "optional_host_permissions": ["<all_urls>"],
@@ -10,6 +10,15 @@
   },
   "chrome_url_overrides": {
     "newtab": "newtab.html"
+  },
+  "commands": {
+    "focus-search": {
+      "suggested_key": {
+        "default": "Ctrl+F",
+        "mac": "Command+F"
+      },
+      "description": "Focus the Launchpad search bar"
+    }
   },
   "icons": {
     "16": "icons/icon-16.png",

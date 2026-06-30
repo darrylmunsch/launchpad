@@ -54,6 +54,19 @@ async function applyToAllTabs(): Promise<void> {
   }
 }
 
+// ─── Keyboard Commands ───
+// Fires regardless of focus location (omnibox, page, etc.) once the user has
+// bound a shortcut. Forwards to any open Launchpad new tab page via runtime
+// messaging — the page's listener decides what to do.
+
+chrome.commands.onCommand.addListener((command) => {
+  if (command === 'focus-search') {
+    chrome.runtime.sendMessage({ type: 'focus-search' }).catch(() => {
+      // No receiver (no new tab page open) — silently ignore.
+    });
+  }
+});
+
 // ─── Tab Update Listener ───
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {

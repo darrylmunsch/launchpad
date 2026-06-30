@@ -14,6 +14,39 @@ export function registerShortcut(shortcut: Shortcut): void {
   shortcuts.push(shortcut);
 }
 
+// ─── Global "focus-search" Shortcut Cache ───
+// Tracks the user's current binding (from chrome://extensions/shortcuts) for
+// the `focus-search` command. Components read the cached value synchronously
+// when rendering and call refreshFocusSearchShortcut() to update it.
+
+let cachedFocusSearchShortcut: string | null = null;
+const shortcutListeners = new Set<() => void>();
+
+export function getFocusSearchShortcut(): string | null {
+  return cachedFocusSearchShortcut;
+}
+
+export async function refreshFocusSearchShortcut(): Promise<void> {
+  try {
+    const commands = await chrome.commands.getAll();
+    const cmd = commands.find(c => c.name === 'focus-search');
+    cachedFocusSearchShortcut = cmd?.shortcut?.trim() || null;
+  } catch {
+    cachedFocusSearchShortcut = null;
+  }
+  shortcutListeners.forEach(fn => fn());
+}
+
+export function onFocusSearchShortcutChange(fn: () => void): () => void {
+  shortcutListeners.add(fn);
+  return () => shortcutListeners.delete(fn);
+}
+
+export function formatShortcut(raw: string): string {
+  // Chrome returns "Ctrl+Shift+F"; normalize spacing for display.
+  return raw.split('+').join(' + ');
+}
+
 export function initKeyboardShortcuts(): void {
   document.addEventListener('keydown', (e) => {
     // Don't fire shortcuts when typing in inputs
@@ -30,7 +63,8 @@ export function initKeyboardShortcuts(): void {
       const matchesKey = e.key.toLowerCase() === shortcut.key.toLowerCase();
 
       if (matchesMod && matchesShift && matchesKey) {
-        e.preventDefault();
+        // Preserve native Escape behavior (closing <dialog>, exiting fullscreen, etc.)
+        if (e.key !== 'Escape') e.preventDefault();
         shortcut.handler(e);
         return;
       }

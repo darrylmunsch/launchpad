@@ -6,6 +6,7 @@ import { store } from '../state';
 import { updateSetting } from '../settings';
 import { hasUnseenChanges } from '../changelog';
 import { $ } from '../utils/dom';
+import { getFocusSearchShortcut, formatShortcut, refreshFocusSearchShortcut } from '../utils/keyboard';
 
 let dialogEl: HTMLDialogElement;
 let contentEl: HTMLElement;
@@ -259,12 +260,24 @@ function renderAboutTab(): void {
       <h3 class="settings-section-title">Keyboard Shortcuts</h3>
       <div class="settings-row">
         <span class="settings-row-label">Search bookmarks</span>
-        <span style="font-size: 0.8rem; color: var(--color-text-tertiary);">Ctrl + F</span>
+        <span id="settings-search-shortcut" style="font-size: 0.8rem; color: var(--color-text-tertiary);">&mdash;</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">New bookmark</span>
+        <span style="font-size: 0.8rem; color: var(--color-text-tertiary);">Ctrl + N</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">Select all bookmarks</span>
+        <span style="font-size: 0.8rem; color: var(--color-text-tertiary);">Ctrl + A</span>
       </div>
       <div class="settings-row">
         <span class="settings-row-label">Close modal / menu</span>
         <span style="font-size: 0.8rem; color: var(--color-text-tertiary);">Escape</span>
       </div>
+      <p style="margin-top: 12px; font-size: 0.8rem; color: var(--color-text-tertiary); line-height: 1.5;">
+        Customize the search shortcut at
+        <a href="#" id="settings-open-shortcuts" style="color: var(--color-accent);">chrome://extensions/shortcuts</a>.
+      </p>
     </div>
   `;
 
@@ -272,4 +285,29 @@ function renderAboutTab(): void {
   whatsNewBtn?.addEventListener('click', () => {
     document.dispatchEvent(new CustomEvent('open-whats-new'));
   });
+
+  // chrome:// URLs can't be opened via a normal link — use chrome.tabs.create.
+  const shortcutsLink = document.getElementById('settings-open-shortcuts');
+  shortcutsLink?.addEventListener('click', (e) => {
+    e.preventDefault();
+    chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
+  });
+
+  // Show the user's actual binding. Refresh the cache first so the value
+  // reflects any change made since the modal was last opened.
+  const shortcutEl = document.getElementById('settings-search-shortcut');
+  if (shortcutEl) {
+    const paint = (): void => {
+      const custom = getFocusSearchShortcut();
+      if (custom) {
+        shortcutEl.textContent = formatShortcut(custom);
+        shortcutEl.style.fontStyle = '';
+      } else {
+        shortcutEl.textContent = 'Not set';
+        shortcutEl.style.fontStyle = 'italic';
+      }
+    };
+    paint();
+    void refreshFocusSearchShortcut().then(paint);
+  }
 }
