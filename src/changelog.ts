@@ -17,6 +17,14 @@ export interface ChangelogVersion {
 
 export const CHANGELOG: ChangelogVersion[] = [
   {
+    version: '1.3.0',
+    date: '2026-06-30',
+    entries: [
+      { type: 'new', text: "Tab Modifier: upload a custom image to use as a tab's icon, alongside the built-in shapes and colors" },
+      { type: 'improved', text: 'Tab icon overrides now reliably replace the favicon on sites that ship their own icon (e.g. GitHub)' },
+    ],
+  },
+  {
     version: '1.2.0',
     date: '2026-05-18',
     entries: [

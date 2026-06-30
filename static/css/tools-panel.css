@@ -711,3 +711,75 @@
   width: 32px;
   height: 32px;
 }
+
+/* ─── Icon Picker — uploaded image ─── */
+.tm-rule-icon-preview img {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 2px;
+}
+
+.tm-icon-preview-large img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.tm-image-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.tm-image-preview {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-hover);
+  overflow: hidden;
+}
+
+.tm-image-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.tm-image-placeholder {
+  font-size: 0.7rem;
+  color: var(--color-text-tertiary);
+  text-align: center;
+  padding: 0 var(--space-xs);
+}
+
+.tm-image-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
+.tm-image-actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.tm-image-name {
+  font-size: 0.72rem;
+  font-family: monospace;
+  color: var(--color-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tm-image-remove.hidden {
+  display: none;
+}

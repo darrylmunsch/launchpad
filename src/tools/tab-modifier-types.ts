@@ -9,10 +9,14 @@ export type MatchType = 'contains' | 'exact' | 'starts_with' | 'domain' | 'regex
 
 export type IconShape = 'circle' | 'square' | 'diamond' | 'triangle';
 
-export interface TabRuleIcon {
+export interface ShapeIcon {
   shape: IconShape;
   color: string;
 }
+
+export type TabRuleIcon =
+  | ({ type: 'shape' } & ShapeIcon)
+  | { type: 'image'; dataUri: string; name?: string };
 
 export interface TabRule {
   id: string;
@@ -87,19 +91,48 @@ const SHAPE_SVG: Record<IconShape, (color: string) => string> = {
   triangle: (c) => `<polygon points="8,1 15,15 1,15" fill="${c}"/>`,
 };
 
-export function generateIconSvg(icon: TabRuleIcon): string {
+export function generateIconSvg(icon: ShapeIcon): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">${SHAPE_SVG[icon.shape](icon.color)}</svg>`;
 }
 
 export function generateIconDataUri(icon: TabRuleIcon): string {
+  if (icon.type === 'image') return icon.dataUri;
   return 'data:image/svg+xml,' + encodeURIComponent(generateIconSvg(icon));
+}
+
+// ─── Icon Normalization ───
+// Upgrades stored/imported icons to the current discriminated-union shape. Rules
+// saved before image-icon support have `{ shape, color }` with no `type` field;
+// those normalize to `{ type: 'shape', … }`. Anything malformed → null (keep original).
+
+const HEX_COLOR_RE = /^#[0-9a-fA-F]{3,8}$/;
+
+export function normalizeIcon(raw: any): TabRuleIcon | null {
+  if (!raw || typeof raw !== 'object') return null;
+
+  if (raw.type === 'image') {
+    return typeof raw.dataUri === 'string' && raw.dataUri.startsWith('data:image/')
+      ? { type: 'image', dataUri: raw.dataUri, ...(raw.name ? { name: String(raw.name) } : {}) }
+      : null;
+  }
+
+  // Explicit shape, or a legacy untyped { shape, color } rule.
+  if (raw.type === 'shape' || (raw.shape && raw.color)) {
+    return ICON_SHAPES.includes(raw.shape) && typeof raw.color === 'string' && HEX_COLOR_RE.test(raw.color)
+      ? { type: 'shape', shape: raw.shape, color: raw.color }
+      : null;
+  }
+
+  return null;
 }
 
 // ─── Storage Helpers ───
 
 export async function loadRules(): Promise<TabRule[]> {
   const result = await chrome.storage.local.get(TAB_RULES_KEY);
-  return (result[TAB_RULES_KEY] as TabRule[] | undefined) ?? [];
+  const raw = (result[TAB_RULES_KEY] as TabRule[] | undefined) ?? [];
+  // Normalize every icon so the UI and service worker both see a well-formed union.
+  return raw.map(r => ({ ...r, icon: normalizeIcon(r.icon) }));
 }
 
 export async function saveRules(rules: TabRule[]): Promise<void> {

@@ -88,7 +88,9 @@ function injectTabModification(titleTemplate: string, iconDataUri: string, pageU
 
   let originalTitle = document.title;
   let appliedTitle = '';
-  let observer: MutationObserver | null = null;
+  let titleObserver: MutationObserver | null = null;
+  let iconObserver: MutationObserver | null = null;
+  let removedIcons: Element[] = [];
 
   function resolveTemplate(template: string, title: string): string {
     let hostname = '';
@@ -107,19 +109,29 @@ function injectTabModification(titleTemplate: string, iconDataUri: string, pageU
     // Watch for page-initiated title changes and re-apply
     const titleEl = document.querySelector('title');
     if (titleEl) {
-      observer = new MutationObserver(() => {
+      titleObserver = new MutationObserver(() => {
         if (document.title !== appliedTitle) {
           originalTitle = document.title;
           appliedTitle = resolveTemplate(titleTemplate, originalTitle);
           document.title = appliedTitle;
         }
       });
-      observer.observe(titleEl, { childList: true, characterData: true, subtree: true });
+      titleObserver.observe(titleEl, { childList: true, characterData: true, subtree: true });
     }
   }
 
-  // Apply icon
-  if (iconDataUri) {
+  // Apply icon. Chrome prefers an existing scalable (SVG) favicon over an appended
+  // raster one, so simply adding our <link> isn't enough — we must remove the page's
+  // own icon links. We stash them so cleanup can restore the original favicon.
+  const ICON_SELECTOR =
+    'link[rel~="icon"]:not([data-tab-modifier]), link[rel="shortcut icon"]:not([data-tab-modifier])';
+
+  function assertIcon(): void {
+    document.querySelectorAll(ICON_SELECTOR).forEach(el => {
+      removedIcons.push(el);
+      el.remove();
+    });
+    // Re-create our link fresh (and last) so Chrome re-evaluates the favicon.
     document.querySelectorAll('link[data-tab-modifier]').forEach(el => el.remove());
     const link = document.createElement('link');
     link.rel = 'icon';
@@ -128,16 +140,40 @@ function injectTabModification(titleTemplate: string, iconDataUri: string, pageU
     document.head.appendChild(link);
   }
 
+  if (iconDataUri) {
+    assertIcon();
+    // Re-assert if the page (e.g. a single-page app) injects its own favicon later,
+    // but cap it: a site that continuously repaints its own favicon (animated or
+    // notification-count favicons) must never make us busy-loop or flicker. After the
+    // budget is spent we disconnect and let the page keep its icon.
+    const MAX_ICON_REASSERTS = 3;
+    let iconReasserts = 0;
+    iconObserver = new MutationObserver(() => {
+      if (!document.querySelector(ICON_SELECTOR)) return;
+      iconReasserts++;
+      assertIcon();
+      if (iconReasserts >= MAX_ICON_REASSERTS && iconObserver) {
+        iconObserver.disconnect();
+        iconObserver = null;
+      }
+    });
+    iconObserver.observe(document.head, { childList: true });
+  }
+
   // Register cleanup for next injection or removal
   (window as any).__tabModifierCleanup = () => {
-    if (observer) observer.disconnect();
-    observer = null;
+    if (titleObserver) titleObserver.disconnect();
+    if (iconObserver) iconObserver.disconnect();
+    titleObserver = null;
+    iconObserver = null;
     // Restore original title
     if (titleTemplate && originalTitle) {
       document.title = originalTitle;
     }
-    // Remove injected favicon
+    // Remove our injected favicon and restore the page's own icon links
     document.querySelectorAll('link[data-tab-modifier]').forEach(el => el.remove());
+    removedIcons.forEach(el => { if (!el.isConnected) document.head.appendChild(el); });
+    removedIcons = [];
     delete (window as any).__tabModifierCleanup;
   };
 }

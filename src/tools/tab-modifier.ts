@@ -5,7 +5,7 @@ import { registerTool } from '../components/tools-panel';
 import {
   ICON_COLORS, ICON_SHAPES,
   generateIconSvg, generateId, loadRules, saveRules,
-  matchesRule, applyTitleTemplate,
+  matchesRule, applyTitleTemplate, normalizeIcon,
 } from './tab-modifier-types';
 import type { TabRule, TabRuleIcon, MatchType, IconShape } from './tab-modifier-types';
 
@@ -90,7 +90,7 @@ function renderList(): void {
 
 function ruleCardHTML(rule: TabRule): string {
   const iconPreview = rule.icon
-    ? `<span class="tm-rule-icon-preview">${generateIconSvg(rule.icon)}</span>`
+    ? `<span class="tm-rule-icon-preview">${iconPreviewHTML(rule.icon)}</span>`
     : '';
   const matchLabel = rule.matchType.replace('_', ' ');
 
@@ -130,6 +130,12 @@ function ruleCardHTML(rule: TabRule): string {
 
 function renderForm(rule: TabRule): void {
   const isEditing = editingRuleId !== null;
+
+  const iconMode: 'keep' | 'shape' | 'image' = rule.icon === null ? 'keep' : rule.icon.type;
+  const initialShape: IconShape = rule.icon?.type === 'shape' ? rule.icon.shape : 'circle';
+  const initialColor: string = rule.icon?.type === 'shape' ? rule.icon.color : ICON_COLORS[0].value;
+  const initialImage: string | null = rule.icon?.type === 'image' ? rule.icon.dataUri : null;
+  const initialImageName: string = rule.icon?.type === 'image' && rule.icon.name ? rule.icon.name : '';
 
   container.innerHTML = `
     <div class="tm-header">
@@ -183,19 +189,24 @@ function renderForm(rule: TabRule): void {
       <fieldset class="tm-icon-fieldset">
         <legend class="form-label">Tab Icon</legend>
         <label class="tm-radio-label">
-          <input type="radio" name="iconMode" value="keep" ${rule.icon === null ? 'checked' : ''}>
+          <input type="radio" name="iconMode" value="keep" ${iconMode === 'keep' ? 'checked' : ''}>
           <span>Keep original</span>
         </label>
         <label class="tm-radio-label">
-          <input type="radio" name="iconMode" value="custom" ${rule.icon !== null ? 'checked' : ''}>
-          <span>Custom icon</span>
+          <input type="radio" name="iconMode" value="shape" ${iconMode === 'shape' ? 'checked' : ''}>
+          <span>Shape</span>
         </label>
-        <div class="tm-icon-picker ${rule.icon === null ? 'hidden' : ''}">
+        <label class="tm-radio-label">
+          <input type="radio" name="iconMode" value="image" ${iconMode === 'image' ? 'checked' : ''}>
+          <span>Upload image</span>
+        </label>
+
+        <div class="tm-icon-picker tm-shape-panel ${iconMode === 'shape' ? '' : 'hidden'}">
           <div class="tm-picker-section">
             <span class="tm-picker-label">Shape</span>
             <div class="tm-shape-picker">
               ${ICON_SHAPES.map(shape => `
-                <button type="button" class="tm-shape-btn ${rule.icon?.shape === shape ? 'active' : ''}" data-shape="${shape}" title="${shape}">
+                <button type="button" class="tm-shape-btn ${initialShape === shape ? 'active' : ''}" data-shape="${shape}" title="${shape}">
                   ${generateIconSvg({ shape, color: 'currentColor' })}
                 </button>
               `).join('')}
@@ -204,11 +215,30 @@ function renderForm(rule: TabRule): void {
           <div class="tm-picker-section">
             <span class="tm-picker-label">Color</span>
             <div class="tm-color-picker">
-              <input type="color" class="tm-color-input" name="iconColor" value="${rule.icon?.color ?? ICON_COLORS[0].value}">
-              <span class="tm-color-value">${rule.icon?.color ?? ICON_COLORS[0].value}</span>
+              <input type="color" class="tm-color-input" name="iconColor" value="${initialColor}">
+              <span class="tm-color-value">${initialColor}</span>
             </div>
           </div>
-          ${rule.icon ? `<div class="tm-icon-preview-large">${generateIconSvg(rule.icon)}</div>` : ''}
+          <div class="tm-icon-preview-large tm-shape-preview">${generateIconSvg({ shape: initialShape, color: initialColor })}</div>
+        </div>
+
+        <div class="tm-icon-picker tm-image-panel ${iconMode === 'image' ? '' : 'hidden'}">
+          <div class="tm-picker-section">
+            <span class="tm-picker-label">Image</span>
+            <div class="tm-image-row">
+              <div class="tm-image-preview ${initialImage ? '' : 'empty'}">
+                ${initialImage ? `<img src="${escapeAttr(initialImage)}" alt="" />` : '<span class="tm-image-placeholder">No image</span>'}
+              </div>
+              <div class="tm-image-controls">
+                <div class="tm-image-actions">
+                  <button type="button" class="btn btn-secondary tm-btn-sm" data-action="upload-image">${initialImage ? 'Replace' : 'Upload image'}</button>
+                  <button type="button" class="btn btn-secondary tm-btn-sm tm-image-remove ${initialImage ? '' : 'hidden'}" data-action="remove-image">Remove</button>
+                </div>
+                <span class="tm-image-name">${escapeHTML(initialImageName)}</span>
+              </div>
+            </div>
+            <span class="tm-field-hint">PNG, JPG, SVG, GIF or WebP. Resized to a 64&times;64 icon.</span>
+          </div>
         </div>
       </fieldset>
 
@@ -232,17 +262,20 @@ function renderForm(rule: TabRule): void {
     patternInput.placeholder = getPatternPlaceholder(matchTypeSelect.value as MatchType);
   });
 
-  // Icon mode radio toggle
+  // Icon mode — reveal the matching sub-panel (or none for "keep")
+  const shapePanel = form.querySelector<HTMLElement>('.tm-shape-panel')!;
+  const imagePanel = form.querySelector<HTMLElement>('.tm-image-panel')!;
   form.querySelectorAll<HTMLInputElement>('[name="iconMode"]').forEach(radio => {
     radio.addEventListener('change', () => {
-      const picker = container.querySelector('.tm-icon-picker')!;
-      picker.classList.toggle('hidden', radio.value === 'keep' && radio.checked);
+      if (!radio.checked) return;
+      shapePanel.classList.toggle('hidden', radio.value !== 'shape');
+      imagePanel.classList.toggle('hidden', radio.value !== 'image');
     });
   });
 
-  // Shape picker
-  let selectedShape: IconShape = rule.icon?.shape ?? 'circle';
-  let selectedColor: string = rule.icon?.color ?? ICON_COLORS[0].value;
+  // ── Shape picker ──
+  let selectedShape: IconShape = initialShape;
+  let selectedColor: string = initialColor;
 
   form.querySelectorAll<HTMLButtonElement>('.tm-shape-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -253,7 +286,6 @@ function renderForm(rule: TabRule): void {
     });
   });
 
-  // Color picker
   const colorInput = form.querySelector<HTMLInputElement>('.tm-color-input')!;
   const colorValue = form.querySelector<HTMLElement>('.tm-color-value')!;
   colorInput.addEventListener('input', () => {
@@ -263,14 +295,57 @@ function renderForm(rule: TabRule): void {
   });
 
   function updateIconPreview(): void {
-    let preview = form.querySelector('.tm-icon-preview-large');
-    if (!preview) {
-      preview = document.createElement('div');
-      preview.className = 'tm-icon-preview-large';
-      container.querySelector('.tm-icon-picker')!.appendChild(preview);
-    }
-    preview.innerHTML = generateIconSvg({ shape: selectedShape, color: selectedColor });
+    const preview = form.querySelector('.tm-shape-preview');
+    if (preview) preview.innerHTML = generateIconSvg({ shape: selectedShape, color: selectedColor });
   }
+
+  // ── Image upload ──
+  let uploadedDataUri: string | null = initialImage;
+  let uploadedName: string | undefined = initialImageName || undefined;
+
+  function renderImagePanel(): void {
+    const previewBox = form.querySelector<HTMLElement>('.tm-image-preview')!;
+    const uploadBtn = form.querySelector<HTMLButtonElement>('[data-action="upload-image"]')!;
+    const removeBtn = form.querySelector<HTMLButtonElement>('[data-action="remove-image"]')!;
+    const nameEl = form.querySelector<HTMLElement>('.tm-image-name')!;
+    if (uploadedDataUri) {
+      previewBox.classList.remove('empty');
+      previewBox.innerHTML = `<img src="${escapeAttr(uploadedDataUri)}" alt="" />`;
+      uploadBtn.textContent = 'Replace';
+      removeBtn.classList.remove('hidden');
+      nameEl.textContent = uploadedName ?? '';
+    } else {
+      previewBox.classList.add('empty');
+      previewBox.innerHTML = '<span class="tm-image-placeholder">No image</span>';
+      uploadBtn.textContent = 'Upload image';
+      removeBtn.classList.add('hidden');
+      nameEl.textContent = '';
+    }
+  }
+
+  form.querySelector('[data-action="upload-image"]')!.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.addEventListener('change', async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        uploadedDataUri = await fileToIconDataUri(file);
+        uploadedName = file.name;
+        renderImagePanel();
+      } catch (err) {
+        alert(err instanceof Error ? err.message : 'Could not process that image.');
+      }
+    });
+    input.click();
+  });
+
+  form.querySelector('[data-action="remove-image"]')!.addEventListener('click', () => {
+    uploadedDataUri = null;
+    uploadedName = undefined;
+    renderImagePanel();
+  });
 
   // URL tester — live match feedback
   const testUrlInput = form.querySelector<HTMLInputElement>('[name="testUrl"]')!;
@@ -320,7 +395,18 @@ function renderForm(rule: TabRule): void {
     e.preventDefault();
 
     const formData = new FormData(form);
-    const useCustomIcon = formData.get('iconMode') === 'custom';
+    const iconMode = formData.get('iconMode');
+
+    let icon: TabRuleIcon | null = null;
+    if (iconMode === 'shape') {
+      icon = { type: 'shape', shape: selectedShape, color: selectedColor };
+    } else if (iconMode === 'image') {
+      if (!uploadedDataUri) {
+        alert('Upload an image or choose a different icon mode.');
+        return;
+      }
+      icon = { type: 'image', dataUri: uploadedDataUri, ...(uploadedName ? { name: uploadedName } : {}) };
+    }
 
     const updatedRule: TabRule = {
       id: rule.id,
@@ -329,7 +415,7 @@ function renderForm(rule: TabRule): void {
       matchType: formData.get('matchType') as MatchType,
       matchPattern: (formData.get('matchPattern') as string).trim(),
       titleTemplate: (formData.get('titleTemplate') as string).trim(),
-      icon: useCustomIcon ? { shape: selectedShape, color: selectedColor } : null,
+      icon,
     };
 
     if (!updatedRule.matchPattern) {
@@ -415,9 +501,7 @@ function handleImport(): void {
         matchType: validateMatchType(r.matchType) ? r.matchType : 'contains',
         matchPattern: String(r.matchPattern ?? ''),
         titleTemplate: String(r.titleTemplate ?? ''),
-        icon: r.icon && r.icon.shape && r.icon.color
-          ? { shape: r.icon.shape as IconShape, color: String(r.icon.color) }
-          : null,
+        icon: normalizeIcon(r.icon),
       }));
 
       await ensureHostPermission();
@@ -457,6 +541,68 @@ function getPatternPlaceholder(matchType: MatchType): string {
 
 function validateMatchType(v: unknown): v is MatchType {
   return typeof v === 'string' && ['contains', 'exact', 'starts_with', 'domain', 'regex'].includes(v);
+}
+
+// ─── Icon Image Upload ───
+
+const MAX_ICON_UPLOAD_BYTES = 2 * 1024 * 1024; // 2 MB source-file cap
+const ICON_RENDER_PX = 64;                     // crisp on HiDPI, ~1–4 KB as PNG
+
+// Read an uploaded image file and normalize it to a small square PNG data URI.
+// Runs in the new-tab page (DOM context), so Image/canvas/FileReader are available.
+// Done at upload time (not on submit) so the preview is instant and no async work
+// sits between the submit gesture and chrome.permissions.request().
+function fileToIconDataUri(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (file.size > MAX_ICON_UPLOAD_BYTES) {
+      reject(new Error('Image is too large (max 2 MB). Try a smaller file.'));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Could not read that file.'));
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = ICON_RENDER_PX;
+        canvas.height = ICON_RENDER_PX;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { reject(new Error('Canvas is unavailable.')); return; }
+
+        // Contain + center on a transparent background (preserves alpha).
+        const iw = img.naturalWidth || img.width;
+        const ih = img.naturalHeight || img.height;
+        if (iw > 0 && ih > 0) {
+          const scale = Math.min(ICON_RENDER_PX / iw, ICON_RENDER_PX / ih);
+          const dw = iw * scale;
+          const dh = ih * scale;
+          ctx.drawImage(img, (ICON_RENDER_PX - dw) / 2, (ICON_RENDER_PX - dh) / 2, dw, dh);
+        } else {
+          // e.g. an SVG with no intrinsic size — fill the whole box.
+          ctx.drawImage(img, 0, 0, ICON_RENDER_PX, ICON_RENDER_PX);
+        }
+
+        try {
+          resolve(canvas.toDataURL('image/png'));
+        } catch {
+          reject(new Error('Could not process that image.'));
+        }
+      };
+      img.onerror = () => reject(new Error('That file is not a supported image.'));
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Inline preview for the rule list. Shapes render as trusted inline SVG; uploaded
+// images render as an <img> with an escaped data-URI src (defends against a crafted
+// dataUri in an imported rule file breaking out of the attribute).
+function iconPreviewHTML(icon: TabRuleIcon): string {
+  if (icon.type === 'image') {
+    return `<img src="${escapeAttr(icon.dataUri)}" alt="" />`;
+  }
+  return generateIconSvg(icon);
 }
 
 function escapeHTML(str: string): string {
